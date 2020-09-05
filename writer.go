@@ -69,12 +69,16 @@ func (w *MobiWriter) AddCover(cover, thumbnail string) {
 }
 
 // NewWriter initializes a writer. Takes a pointer to file and book title/database name
-func NewWriter(filename string) (writer *MobiWriter, err error) {
+func NewWriter(filename string, opt *Options) (writer *MobiWriter, err error) {
+
+	options = *opt
 	writer = &MobiWriter{}
 	writer.file, err = os.Create(filename)
+
 	if err != nil {
 		return nil, err
 	}
+
 	return
 }
 
@@ -343,7 +347,9 @@ func (w *MobiWriter) generateCNCX() {
 			w.cncxBuffer.WriteString(CNCX_ID)                  // ID
 			w.cncxBuffer.WriteByte(controlByte(TagxSingle)[0]) // Controll Byte
 			w.cncxBuffer.Write(vwiEncInt(node.RecordOffset))   // Record offset
-			fmt.Printf("Offset: %v\n", node.RecordOffset)
+
+			//fmt.Printf("Offset: %v\n", node.RecordOffset)
+
 			w.cncxBuffer.Write(vwiEncInt(node.Len))                // Lenght of a record
 			w.cncxBuffer.Write(vwiEncInt(w.cncxLabelBuffer.Len())) // Label Offset 	// Offset relative to CNXC record
 			w.cncxLabelBuffer.Write(vwiEncInt(len(node.Title)))    // CNCXLabel lenght
